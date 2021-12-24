@@ -62,8 +62,21 @@ def Add_Contact(contact_df,fn,ln,cell_num,home_num,work_num,email,relationship):
     return(new_contact_df)
 
 #Subtract from the DataFrame 
-def Remove_Contact():
-    pass
+def Remove_Contact(contact_df,first_name,last_name):
+    master_contact_list = contact_df.values.tolist()
+    index_found = -1
+    
+    for i in range(len(master_contact_list)):
+        if master_contact_list[i][0].lower() == first_name.lower():
+            if master_contact_list[i][1].lower() == last_name.lower():
+                index_found = i
+ 
+    if index_found < 0:
+        return (contact_df,False)
+    
+    contact_df = contact_df.drop(index_found)
+    master_contact_list = contact_df.values.tolist()
+    return (contact_df,True)
 
 #Replace Information from the DataFrame
 def Edit_Contact():
@@ -81,8 +94,9 @@ def Change_Book_Name():
     pass 
 
 #Save
-def Save_Book():
-    pass
+def Save_Book(contact_df):
+    contact_df.to_excel('PhoneBook.xlsx',sheet_name='Contact Information',index=False)
+    # index=false prevents an unamed column from being created
 
 #Ask if they are a new user then make a new excel file 
 #If they aren't a new user then let them see on an existing file (will have to \ask for the file)
@@ -117,7 +131,7 @@ while True:
     not_inside = False    
     print()    
     print("What would you like to do?")
-    print("Category Options\n A : Add New Contact \n R : Remove Contact \n E : Edit Existing Contact \n V : View Contacts \n S : Search For Contact \n")
+    print("Category Options\n A : Add New Contact \n R : Remove Contact \n E : Edit Existing Contact \n V : View Contacts \n S : Search For Contact \n C : Change Book Name")
     
     option_answer = input("Choice: ").lower()
 
@@ -140,12 +154,22 @@ while True:
     
     elif option_answer == "r": 
         '''remmove contact'''
-        pass 
+        while True:
+            print("Please indicate the contacts first and last name.")
+            first_name = input("First Name: ")
+            last_name = input("Last Name: ")
+            return_information = Remove_Contact(contact_df,first_name,last_name)
+            if return_information[1] == True:
+                contact_df = return_information[0]
+                break
+            else:
+                print()
+                print("Sorry, the name you provided could not be found")
+                continue
     
     elif option_answer == "e": 
         '''edit existing contact'''
-        contact_df.to_excel('PhoneBook.xlsx',sheet_name='Contact Information',index=False)
-        # index=false prevents an unamed column from being created
+        Save_Book(contact_df)
         break
     
     elif option_answer == "v": 
@@ -155,6 +179,10 @@ while True:
     elif option_answer == "s": 
         '''search for contact'''
         pass
+    
+    elif option_answer == "c":
+        pass
+    
     else:
         print("Sorry, that is not an option on the menue. Please try again")
         continue
